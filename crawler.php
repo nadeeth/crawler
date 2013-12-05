@@ -11,7 +11,7 @@ class Crawler {
     return file_get_contents($uri); 
   }
 
-  public function get_images() {
+  public function get_images($limit = 10) {
      
     $images = Array();
    
@@ -21,7 +21,7 @@ class Crawler {
         @$xmlDoc->loadHTML($this->page);
         $xpath = new DOMXPath(@$xmlDoc);
 
-        $searchNode = $xpath->query('//img');
+        $searchNode = $xpath->query("(//img)[position() <= {$limit}]");
        
         foreach ($searchNode as $node) {
            
