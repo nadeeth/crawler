@@ -1,45 +1,78 @@
 <?php
 class Crawler {
 
-  protected $page = '';
+    public $url = false;
+    protected $xpath = false;
 
-  public function __construct($uri) {
-    $this->page = $this->read_page($uri);
-  }
-
-  public function read_page($uri) {
-    return file_get_contents($uri); 
-  }
-
-  public function get_images($limit = 10) {
-     
-    $images = Array();
-   
-    if (!empty($this->page)){
-   
-        $xmlDoc = new DOMDocument();
-        @$xmlDoc->loadHTML($this->page);
-        $xpath = new DOMXPath(@$xmlDoc);
-
-        $searchNode = $xpath->query("(//img)[position() <= {$limit}]");
-       
-        foreach ($searchNode as $node) {
-           
-            $images[] = $node->getAttribute('src');
+    public function __construct($url = false) {
+        
+        if ($url) {
+            $this->url = $url;
+            $this->init($url);
         }
     }
-   
-    return $images;
-  }
 
+    public function init() {
+
+        $xmlDoc = new DOMDocument();
+        @$xmlDoc->loadHTML(file_get_contents($this->url));
+        $this->xpath = new DOMXPath(@$xmlDoc);
+    }
+
+    public function getImages($limit = 10) {
+
+        $images = Array();
+
+        $searchNode = $this->xpath->query("(//img)[position() <= {$limit}]");
+
+        foreach ($searchNode as $node) {
+
+            $images[] = $node->getAttribute('src');
+        }
+
+        return $images;
+    }
+  
+    public function getHeadings($h, $limit = 10) {
+
+        $headings = Array();
+
+        $searchNode = $this->xpath->query("(//h{$h})[position() <= {$limit}]");
+
+        foreach ($searchNode as $node) {
+
+            $headings[] = $node->nodeValue;
+        }
+
+        return $headings;
+    }
+    
+    public function getParagraphs($limit = 10) {
+        
+        $paras = Array();
+
+        $searchNode = $this->xpath->query("(//p)[position() <= {$limit}]");
+
+        foreach ($searchNode as $node) {
+
+            $paras[] = $node->nodeValue;
+        }
+
+        return $paras;
+    }
+    
+    public function getInnerHtml($tag, $limit = 10) {
+        
+        $content = Array();
+
+        $searchNode = $this->xpath->query("(//{$tag})[position() <= {$limit}]");
+
+        foreach ($searchNode as $node) {
+
+            $content[] = $node->nodeValue;
+        }
+
+        return $content;
+    }
 }
-
-$crawl = new Crawler('https://www.google.com.sg/search?q=dogs&hl=en&source=lnms&tbm=isch&sa=X&ei=EzBDUbTeB460rAfLxIH4Ag&ved=0CAcQ_AUoAQ&biw=1301&bih=678');
-$images = $crawl->get_images();
-
-foreach ($images as $k=>$v) {
-    echo "<img src='$v'>";
-}
-
-print_r($images);
 ?> 
