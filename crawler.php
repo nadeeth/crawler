@@ -19,6 +19,34 @@ class Crawler {
         $this->xpath = new DOMXPath(@$xmlDoc);
     }
 
+    public function getInnerText($tag, $limit = 10) {
+        
+        $content = Array();
+
+        $searchNode = $this->xpath->query("(//{$tag})[position() <= {$limit}]");
+
+        foreach ($searchNode as $node) {
+
+            $content[] = $node->nodeValue;
+        }
+
+        return $content;
+    }
+    
+    public function getTagAtrributes($tag, $attr, $limit = 10) {
+
+        $attributes = Array();
+
+        $searchNode = $this->xpath->query("(//{$tag})[position() <= {$limit}]");
+
+        foreach ($searchNode as $node) {
+
+            $attributes[] = $node->getAttribute($attr);
+        }
+
+        return $attributes;
+    }
+    
     public function getImages($limit = 10) {
 
         $images = Array();
@@ -59,20 +87,6 @@ class Crawler {
         }
 
         return $paras;
-    }
-    
-    public function getInnerHtml($tag, $limit = 10) {
-        
-        $content = Array();
-
-        $searchNode = $this->xpath->query("(//{$tag})[position() <= {$limit}]");
-
-        foreach ($searchNode as $node) {
-
-            $content[] = $node->nodeValue;
-        }
-
-        return $content;
     }
 }
 ?> 

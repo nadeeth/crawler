@@ -15,6 +15,38 @@ class crawlerTest extends PHPUnit_Framework_TestCase {
         return $this->crawler;
     }
 
+    public function testGetInnerText() {
+
+        $crawler = new Crawler("crawlerTestVictim.html");
+        
+        $content = $crawler->getInnerText('p');
+        $this->assertEquals('Paragraph one...', $content[0]);
+        $this->assertEquals('Paragraph two...', $content[1]);
+        
+        $content = $crawler->getInnerText('h1', 1);//test the limit
+        $this->assertEquals(1, count($content));
+        $this->assertEquals('Title One', $content[0]);
+    }
+    
+    public function testGetTagAtrributes() {
+
+        $crawler = new Crawler("crawlerTestVictim.html");
+        
+        $images = $crawler->getTagAtrributes("img", "src"); 
+        $this->assertEquals(3, count($images));
+        $this->assertEquals('image_one.jpg', $images[0]);
+        $this->assertEquals('image_two.jpg', $images[1]);
+        
+        $images = $crawler->getTagAtrributes("img", "src", 1);//test the limit
+        $this->assertEquals(1, count($images));
+        $this->assertEquals('image_one.jpg', $images[0]);
+        
+        $links = $crawler->getTagAtrributes("a", "href");
+        $this->assertEquals(2, count($links));
+        $this->assertEquals('crawlerTestVictimLink1.html', $links[0]);
+        $this->assertEquals('crawlerTestVictimLink2.html', $links[1]);
+    }
+    
     public function testGetImages() {
 
         $crawler = new Crawler("crawlerTestVictim.html");
@@ -54,19 +86,6 @@ class crawlerTest extends PHPUnit_Framework_TestCase {
         $paragraphs = $crawler->getParagraphs(1);//test the limit
         $this->assertEquals(1, count($paragraphs));
         $this->assertEquals('Paragraph one...', $paragraphs[0]);
-    }
-    
-    public function testGetInnerHtml() {
-
-        $crawler = new Crawler("crawlerTestVictim.html");
-        
-        $content = $crawler->getInnerHtml('p');
-        $this->assertEquals('Paragraph one...', $content[0]);
-        $this->assertEquals('Paragraph two...', $content[1]);
-        
-        $content = $crawler->getInnerHtml('h1', 1);//test the limit
-        $this->assertEquals(1, count($content));
-        $this->assertEquals('Title One', $content[0]);
     }
 }
 ?>
